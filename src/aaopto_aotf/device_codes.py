@@ -17,6 +17,8 @@ class CmdRoots(StrEnum):
     DRIVER_MODE = "I"
     PLL_SWITCH = "O"
     DATA_STORAGE = "E"
+    VOLTAGE_RANGE = "V"
+    RESET = "M"
 
 
 class Cmds(StrEnum):
@@ -27,7 +29,9 @@ class Cmds(StrEnum):
     FINE_POWER_ADJUST = CmdRoots.FINE_POWER_ADJUST.value + "{1:05.02F}"
     DRIVER_MODE = CmdRoots.DRIVER_MODE.value
     PLL_SWITCH = CmdRoots.PLL_SWITCH.value + "O{0}"
-    DATA_STORAGE = CmdRoots.DriverMode.value
+    DATA_STORAGE = CmdRoots.DriverMode.value + "{0}"
+    VOLTAGE_RANGE = CmdRoots.VOLTAGE_RANGE.value + "{0}"
+    RESET = CmdRoots.RESET.value
 
 
 Queries = StrEnum('Queries', {c.name: f"{c.value}?" for c in CmdRoots})
@@ -40,3 +44,7 @@ class DriverMode(StrEnum):
 class PLLState(StrEnum):
     OFF = "0"
     ON= "1"
+
+class VoltageRange(StrEnum):
+    ZERO_TO_FIVE_VOLTS = "0"
+    ZERO_TO_TEN_VOLTS = "1"

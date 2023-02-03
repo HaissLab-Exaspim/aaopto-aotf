@@ -41,6 +41,14 @@ class AOTF:
 
         self._active_channel = None
 
+    def reset(self):
+        """Reset the device to external mode with stored parameter settings."""
+        self._send(Cmds.RESET.value)
+
+    def save_settings(self):
+        """Save all specified channel settings since the prior reset."""
+        self._send(Cmds.DATA_STORAGE.value)
+
     def select_channel(self, channel: int):
         """Select the active channel."""
         if channel > MAX_CHANNELS or channel < 1:
@@ -59,7 +67,6 @@ class AOTF:
     def set_power_percent(self, power: float):
         """Set the active channel power in percent."""
         power_int = round(power*MAX_POWER_INT)
-        # Clamp to a range of 0 <= power <= 1023
         if power_int > MAX_POWER_INT or power_int < 0:
             raise IndexError("Specified coarse power value is out of range.")
         msg = Cmds.POWER_ADJUST.value.format(power_int)
@@ -73,9 +80,12 @@ class AOTF:
         msg = Cmds.FINE_POWER_ADJUST.value.format(power)
         self._send(msg)
 
-    @channel_specified
     def set_driver_mode(self, mode: DriverMode):
-        msg = Cmds.DriverMode.value.format(DriverMode.value)
+        msg = Cmds.DriverMode.value.format(mode.value)
+        self._send(msg)
+
+    def set_external_input_voltage_range(self, vrange: VoltageRange):
+        msg = Cmds.VoltageRange.value.format(vrange.value)
         self._send(msg)
 
     @channel_specified
@@ -98,22 +108,27 @@ class AOTF:
         """Return the most recently specified channel."""
         return int(self._send(Queries.CHANNEL_SELECT.value).rstrip(EOL))
 
+    @channel_specified
     def get_frequency(self):
         """Return the frequency in [MHz] of the current channel."""
         return float(self._send(Queries.FREQUENCY_ADJUST.value).rstrip(EOL))
 
+    @channel_specified
     def get_power_percent(self):
         return int(self._send(Queries.POWER_ADJUST.value).rstrip(EOL)) * \
             100./MAX_POWER_INT
 
+    @channel_specified
     def get_power_dbm(self):
         """return the fine power value of the current channel."""
         return float(self._send(Queries.FINE_POWER_ADJUST.value).rstrip(EOL))
 
+    @channel_specified
     def get_driver_mode(self):
         """return the driver mode of the current channel."""
         return DriverMode(self._send(Queries.DRIVER_MODE.value).rstrip(EOL))
 
+    @channel_specified
     def get_pll(self):
         """Get state of the pll for the current channel."""
         return PLLState(self._send(Queries.PLL_SWITCH.value).rstrip(EOL))

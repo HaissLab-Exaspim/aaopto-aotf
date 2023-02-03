@@ -27,6 +27,22 @@ To install this package from the Github in editable mode, from this directory in
 
 To install this package in editable mode with dependencies for building the docs, invoke: `pip install -e .[dev]`
 
+## Intro and Basic Usage
+````python
+from aaopto_aotf.aotf import AOTF
+
+aotf = AOTF("COM3")
+````
+
+The basic syntax looks like so:
+````python
+aotf.set_channel(1)
+aotf.set_frequency(110.5)
+aotf.set_power_dbm(15.0)
+aotf.set_driver_mode(DriverMode.INTERNAL)
+aotf.set_pll(PLLState.ON)
+````
+
 <!--
 ## Contributing
 
