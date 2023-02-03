@@ -3,8 +3,8 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hello_world"
-description = "Prints messages to stdout. Simple boilerplate for libraries."
+name = "aaopto_aotf"
+description = "Python driver for AA OptoElectronics AOTF device."
 license = {text = "MIT"}
 requires-python = ">=3.7"
 authors = [
@@ -17,7 +17,8 @@ readme = "README.md"
 dynamic = ["version"]
 
 dependencies = [
-    'pandas'
+    'pyserial',
+    'parse'
 ]
 
 [project.optional-dependencies]
@@ -28,6 +29,7 @@ dev = [
     'interrogate',
     'isort',
     'Sphinx',
+    'enum-tools[sphinx]',
     'pygit2',
     'furo'
 ]
@@ -36,7 +38,7 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.dynamic]
-version = {attr = "hello_world.__version__"}
+version = {attr = "aaopto_aotf.__version__"}
 
 [tool.black]
 line-length = 79
