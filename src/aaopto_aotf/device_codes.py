@@ -12,7 +12,7 @@ class CmdRoots(StrEnum):
     CHANNEL_SELECT = "X"
     FREQUENCY_ADJUST = "F"
     POWER_ADJUST = "P"
-    FINE_POWER_ADJUST = "L"
+    FINE_POWER_ADJUST = "D"
     LINES_STATUS = "S"
     DRIVER_MODE = "I"
     PLL_SWITCH = "O"
@@ -23,9 +23,8 @@ class Cmds(StrEnum):
     """Cmds implemented as unpopulated format strings."""
     CHANNEL_SELECT = CmdRoots.CHANNEL_SELECT.value + "{0}"
     FREQUENCY_ADJUST = CmdRoots.FREQUENCY_ADJUST.value + "{0:07.3F}"
-    POWER_ADJUST = CmdRoots.POWER_ADJUST.value + "{0}"
-    FINE_POWER_ADJUST = CmdRoots.FINE_POWER_ADJUST.value + "{0}" \
-                        CmdRoots.POWER_ADJUST.value + "{1:05.02F}"
+    POWER_ADJUST = CmdRoots.POWER_ADJUST.value + "{0:04d}"
+    FINE_POWER_ADJUST = CmdRoots.FINE_POWER_ADJUST.value + "{1:05.02F}"
     DRIVER_MODE = CmdRoots.DRIVER_MODE.value
     PLL_SWITCH = CmdRoots.PLL_SWITCH.value + "O{0}"
     DATA_STORAGE = CmdRoots.DriverMode.value
