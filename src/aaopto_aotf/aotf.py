@@ -85,7 +85,7 @@ class AOTF:
         self._send(msg)
 
     def set_external_input_voltage_range(self, vrange: VoltageRange):
-        msg = Cmds.VoltageRange.value.format(vrange.value)
+        msg = Cmds.VOLTAGE_RANGE.value.format(vrange.value)
         self._send(msg)
 
     @channel_specified
@@ -127,6 +127,9 @@ class AOTF:
     def get_driver_mode(self):
         """return the driver mode of the current channel."""
         return DriverMode(self._send(Queries.DRIVER_MODE.value).rstrip(EOL))
+
+    def get_external_input_voltage_range(self):
+        VoltageRange(self._send(Queries.VOLTAGE_RANGE.value).rstrip(EOL))
 
     @channel_specified
     def get_pll(self):
