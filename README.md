@@ -1,12 +1,14 @@
-# library-repo-template
+# AA OptoElectronics AOTF
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
+<!--
 ![Code Style](https://img.shields.io/badge/code%20style-black-black)
 
 [![CI](https://github.com/AllenNeuralDynamics/library-repo-template/actions/workflows/ci.yml/badge.svg)](https://github.com/AllenNeuralDynamics/library-repo-template/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/AllenNeuralDynamics/library-repo-template/branch/main/graph/badge.svg?token=ZVZ98GLA9V)](https://codecov.io/gh/AllenNeuralDynamics/library-repo-template)
 
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+-->
 
 [//]: # "These badges work in public repos"
 
@@ -15,19 +17,17 @@
 [//]: # "![GitHub release (latest by date)](https://img.shields.io/github/v/release/AllenNeuralDynamics/library-repo-template?display_name=release)"
 
 
-Template for a minimal, basic repository for an AIND library.
+python driver to control AOTF devices.
+
 
 ## Installation
-To use the software, in the root directory, run
-```bash
-pip install -e .
-```
+<!--To install this package from [PyPI](https://pypi.org/project/aaopto_aotf), invoke: `pip install aaopto_aotf`.-->
 
-To develop the code, run
-```bash
-pip install -e .[dev]
-```
+To install this package from the Github in editable mode, from this directory invoke: `pip install -e .`
 
+To install this package in editable mode with dependencies for building the docs, invoke: `pip install -e .[dev]`
+
+<!--
 ## Contributing
 
 ### Linters and testing
@@ -99,3 +99,4 @@ Then to create the documentation HTML files, run
 sphinx-build -b html doc_template/source/ doc_template/build/html
 ```
 More info on sphinx installation can be found [here](https://www.sphinx-doc.org/en/master/usage/installation.html).
+-->
