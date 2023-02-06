@@ -4,6 +4,7 @@ import logging
 from parse import parse
 from serial import Serial, SerialException
 from aaopto_aotf.device_codes import *
+from functools import wraps
 
 def channel_specified(func):
     """Check that the channel has already been specified."""
@@ -19,18 +20,17 @@ MAX_CHANNELS = 8
 MAX_POWER_DBM = 22.0
 MAX_POWER_INT = 1023
 
-BAUDRATE = 19200
-EOL = '\r'
+BAUDRATE = 57600#19200
+TIMEOUT = 0.5
 
 
 class AOTF:
-
 
     def __init__(self, com_port: str):
         self.ser = None
         self.log = logging.getLogger(__name__)
         try:
-            self.ser = Serial(com_port, AOTF.BAUDRATE)
+            self.ser = Serial(com_port, BAUDRATE, timeout=TIMEOUT)
         except SerialException as e:
             self.log.error("Could not connect to AA OptoElectronics AOTF. "
                            "Is the device plugged in? Is another program "
@@ -43,7 +43,8 @@ class AOTF:
 
     def reset(self):
         """Reset the device to external mode with stored parameter settings."""
-        self._send(Cmds.RESET.value)
+        self._send(Cmds.RESET.value, reply_lines=0)
+        self._active_channel = 1
 
     def save_settings(self):
         """Save all specified channel settings since the prior reset."""
@@ -86,7 +87,8 @@ class AOTF:
 
     def set_external_input_voltage_range(self, vrange: VoltageRange):
         msg = Cmds.VOLTAGE_RANGE.value.format(vrange.value)
-        self._send(msg)
+        # Note: this command does not issue any characters in response.
+        self._send(msg, reply_lines=0)
 
     @channel_specified
     def set_pll(self, state: PLLState):
@@ -97,21 +99,31 @@ class AOTF:
         """Return the line status as a dictionary keyed by channel index."""
         settings = {}
         reply = self._send(Queries.LINES_STATUS.value,
-                           reply_lines=MAX_CHANNELS)
-        template = "L{channel} F={freq.3f} P={power.3f} {state}"
-        for line in reply.split(EOL):
+                           reply_lines=MAX_CHANNELS+1)
+        reply_lines = reply.split(EOL)
+        # Parse the channel settings.
+        template = "l{channel} F={freq:.3f} P={power:.3f} {state} {mode}"
+        for line in reply_lines[:-2]:
             ch_settings = parse(template, line).named
-            settings[int(ch_settings.pop())] = ch_settings
+            settings[int(ch_settings.pop('channel'))] = ch_settings
+        # Parse the blanking settings.
+        template = "{blanking} {state} {mode}"
+        blanking_settings = parse(template, reply_lines[-2]).named
+        settings[blanking_settings.pop('blanking').lower()] = blanking_settings
         return settings
 
     def get_channel(self):
         """Return the most recently specified channel."""
-        return int(self._send(Queries.CHANNEL_SELECT.value).rstrip(EOL))
+        reply = parse(Replies.CHANNEL_SELECT,
+                      self._send(Queries.CHANNEL_SELECT.value))
+        #return int(self._send(Queries.CHANNEL_SELECT.value))
 
-    @channel_specified
+    #@channel_specified
     def get_frequency(self):
         """Return the frequency in [MHz] of the current channel."""
-        return float(self._send(Queries.FREQUENCY_ADJUST.value).rstrip(EOL))
+        reply = parse(Replies.FREQUENCY_ADJUST,
+                      self._send(Queries.FREQUENCY_ADJUST.value))
+        #return float(self._send(Queries.FREQUENCY_ADJUST.value).rstrip(EOL))
 
     @channel_specified
     def get_power_percent(self):
@@ -134,17 +146,25 @@ class AOTF:
     @channel_specified
     def get_pll(self):
         """Get state of the pll for the current channel."""
-        return PLLState(self._send(Queries.PLL_SWITCH.value).rstrip(EOL))
+        # TODO: we have to extract this from the Line Status command.
+        pass
+        #return PLLState(self._send(Queries.PLL_SWITCH.value).rstrip(EOL))
 
-    def _send(self, msg: str, reply_lines: int = 1, wait: bool = True):
-        """Send message to the AOTF. Optionally wait for a reply."""
-        self.log.debug(f"Sending: {msg}")
-        self.ser.write(f"{msg}{EOL}".encode('ascii'))
-        # TODO: handle wait=False case.
+    def get_product_id(self):
+        """Get the product id."""
+        raise NotImplementedError
+
+    def _send(self, msg: str, reply_lines: int = 1):
+        """Send message to the AOTF. Return the reply if one exists."""
+        self.log.debug(fr"Sending: {repr(msg)}")
+        self.ser.write(f"{msg}".encode('ascii'))
+        if not reply_lines:
+            return
         reply = ""
-        for i in range(reply_lines):
-            line = self.ser.read_until(EOL.encode("ascii").decode("utf8")
-            self.log.debug("Received: {reply}")
-            reply += line
-        return reply
+        # All cmds that issue a reply start with '\n\r'. Discard the first one.
+        self.ser.read_until(EOL.encode("ascii"))
+        line = self.ser.read_until("?".encode("ascii")).decode("utf8")
+        #line = self.ser.read(128).decode("utf8")
+        self.log.debug(fr"Received: {repr(line)}")
+        return line
 

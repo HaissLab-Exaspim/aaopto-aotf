@@ -7,6 +7,8 @@ except ImportError:
     class StrEnum(str, Enum):
         pass
 
+EOL = '\n\r'
+
 
 class CmdRoots(StrEnum):
     CHANNEL_SELECT = "X"
@@ -19,22 +21,39 @@ class CmdRoots(StrEnum):
     DATA_STORAGE = "E"
     VOLTAGE_RANGE = "V"
     RESET = "M"
+    PRODUCT_ID = "q"
 
 
 class Cmds(StrEnum):
     """Cmds implemented as unpopulated format strings."""
-    CHANNEL_SELECT = CmdRoots.CHANNEL_SELECT.value + "{0}"
-    FREQUENCY_ADJUST = CmdRoots.FREQUENCY_ADJUST.value + "{0:07.3F}"
-    POWER_ADJUST = CmdRoots.POWER_ADJUST.value + "{0:04d}"
-    FINE_POWER_ADJUST = CmdRoots.FINE_POWER_ADJUST.value + "{1:05.02F}"
-    DRIVER_MODE = CmdRoots.DRIVER_MODE.value
-    PLL_SWITCH = CmdRoots.PLL_SWITCH.value + "O{0}"
-    DATA_STORAGE = CmdRoots.DriverMode.value + "{0}"
-    VOLTAGE_RANGE = CmdRoots.VOLTAGE_RANGE.value + "{0}"
+    CHANNEL_SELECT = CmdRoots.CHANNEL_SELECT.value + "{0}{EOL}"
+    FREQUENCY_ADJUST = CmdRoots.FREQUENCY_ADJUST.value + "{0:07.3F}{EOL}"
+    POWER_ADJUST = CmdRoots.POWER_ADJUST.value + "{0:04d}{EOL}"
+    FINE_POWER_ADJUST = CmdRoots.FINE_POWER_ADJUST.value + "{1:05.02F}{EOL}"
+    DRIVER_MODE = CmdRoots.DRIVER_MODE.value + "{EOL}"
+    PLL_SWITCH = CmdRoots.PLL_SWITCH.value + "O{0}{EOL}"
+    DATA_STORAGE = CmdRoots.DRIVER_MODE.value + "{0}{EOL}"
+    VOLTAGE_RANGE = CmdRoots.VOLTAGE_RANGE.value + "{0}{EOL}"
     RESET = CmdRoots.RESET.value
+    PRODUCT_ID = CmdRoots.PRODUCT_ID.value
 
 
-Queries = StrEnum('Queries', {c.name: f"{c.value}?" for c in CmdRoots})
+class Queries(StrEnum):
+    CHANNEL_SELECT = CmdRoots.CHANNEL_SELECT.value + "{EOL}"
+    FREQUENCY_ADJUST = CmdRoots.FREQUENCY_ADJUST.value + "{EOL}"
+    POWER_ADJUST = CmdRoots.POWER_ADJUST.value + "{EOL}"
+    FINE_POWER_ADJUST = CmdRoots.FINE_POWER_ADJUST + "{EOL}"
+    LINES_STATUS = CmdRoots.LINES_STATUS.value
+    PRODUCT_ID = CmdRoots.PRODUCT_ID.value + "{EOL}"
+
+query_excludes = [CmdRoots.RESET]  # TODO: finish.
+Queries = StrEnum('Queries', {c.name: f"{c.value}{EOL}" for c in CmdRoots
+                              if c not in query_excludes})
+
+class Replies(StrEnum):
+    CHANNEL_SELECT = f"Line number> {0}{EOL}?"
+    FREQUENCY_ADJUST = f"Frequency> {0}{EOL}?"
+    PRODUCT_ID = f"> {0}{EOL}?"
 
 
 class DriverMode(StrEnum):
