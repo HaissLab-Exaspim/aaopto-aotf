@@ -1,23 +1,8 @@
 # AA OptoElectronics AOTF
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
-<!--
-![Code Style](https://img.shields.io/badge/code%20style-black-black)
 
-[![CI](https://github.com/AllenNeuralDynamics/library-repo-template/actions/workflows/ci.yml/badge.svg)](https://github.com/AllenNeuralDynamics/library-repo-template/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/AllenNeuralDynamics/library-repo-template/branch/main/graph/badge.svg?token=ZVZ98GLA9V)](https://codecov.io/gh/AllenNeuralDynamics/library-repo-template)
-
-[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
--->
-
-[//]: # "These badges work in public repos"
-
-[//]: # "![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/AllenNeuralDynamics/library-repo-template?include_prereleases&sort=semver)"
-
-[//]: # "![GitHub release (latest by date)](https://img.shields.io/github/v/release/AllenNeuralDynamics/library-repo-template?display_name=release)"
-
-
-python driver to control AOTF devices.
+python driver to control MPDS AOTF devices.
 
 
 ## Installation
@@ -29,90 +14,24 @@ To install this package in editable mode with dependencies for building the docs
 
 ## Intro and Basic Usage
 ````python
-from aaopto_aotf.aotf import AOTF
+from aaopto_aotf.aotf import MPDS
 
-aotf = AOTF("COM3")
+aotf = MPDS("COM3")
 ````
 
 The basic syntax looks like so:
 ````python
-aotf.set_channel(1)
-aotf.set_frequency(110.5)
-aotf.set_power_dbm(15.0)
-aotf.set_driver_mode(DriverMode.INTERNAL)
-aotf.set_pll(PLLState.ON)
+from aaopto_aotf.device_codes import DriverMode, BlankingMode
+
+NUM_CHANNELS = 8
+
+aotf.set_blanking(BlankingMode.INTERNAL)  # disable blanking control from external input pin.
+
+# Note: device channels are 1-indexed to be consistent with the datasheet.
+for channel in range(1, NUM_CHANNELS+1):
+    aotf.set_frequency(channel, 110.5)
+    aotf.set_power_dbm(channel, 15.0)
+    aotf.set_driver_mode(DriverMode.INTERNAL)
+    aotf.enable_channel(channel)
 ````
 
-<!--
-## Contributing
-
-### Linters and testing
-
-There are several libraries used to run linters, check documentation, and run tests.
-
-- Please test your changes using the **coverage** library, which will run the tests and log a coverage report:
-
-```bash
-coverage run -m unittest discover && coverage report
-```
-
-- Use **interrogate** to check that modules, methods, etc. have been documented thoroughly:
-
-```bash
-interrogate .
-```
-
-- Use **flake8** to check that code is up to standards (no unused imports, etc.):
-```bash
-flake8 .
-```
-
-- Use **black** to automatically format the code into PEP standards:
-```bash
-black .
-```
-
-- Use **isort** to automatically sort import statements:
-```bash
-isort .
-```
-
-- Use **actionlint** to check that the GitHub Actions workflows are valid:
-```bash
-actionlint
-```
-
-- Use **commitlint** to check that commit messages are valid:
-```bash
-commitlint --from=HEAD~1
-```
-
-### Pull requests
-
-For internal members, please create a branch. For external members, please fork the repository and open a pull request from the fork. We'll primarily use [Angular](https://github.com/angular/angular/blob/main/CONTRIBUTING.md#commit) style for commit messages. Roughly, they should follow the pattern:
-```text
-<type>(<scope>): <short summary>
-```
-
-where scope (optional) describes the packages affected by the code changes and type (mandatory) is one of:
-
-- **build**: Changes that affect build tools or external dependencies (example scopes: pyproject.toml, setup.py)
-- **ci**: Changes to our CI configuration files and scripts (examples: .github/workflows/ci.yml)
-- **docs**: Documentation only changes
-- **feat**: A new feature
-- **fix**: A bugfix
-- **perf**: A code change that improves performance
-- **refactor**: A code change that neither fixes a bug nor adds a feature
-- **test**: Adding missing tests or correcting existing tests
-
-### Documentation
-To generate the rst files source files for documentation, run
-```bash
-sphinx-apidoc -o doc_template/source/ src 
-```
-Then to create the documentation HTML files, run
-```bash
-sphinx-build -b html doc_template/source/ doc_template/build/html
-```
-More info on sphinx installation can be found [here](https://www.sphinx-doc.org/en/master/usage/installation.html).
--->
