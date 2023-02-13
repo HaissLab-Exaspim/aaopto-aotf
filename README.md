@@ -1,4 +1,4 @@
-# AA OptoElectronics MPDSnC AOTF Driver
+# AA OptoElectronics MPDSnCxx AOTF Driver
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
