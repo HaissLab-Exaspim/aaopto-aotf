@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
-python driver to control MPDSnCxx AOTF devices.
+python driver to control [MPDSnCxx AOTF devices](http://www.aaoptoelectronic.com/our-products/multi-channels-drivers-for-polychromatic-modulators/).
 
 
 ## Installation
