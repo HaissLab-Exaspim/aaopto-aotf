@@ -23,6 +23,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    'matplotlib',
+    'numpy',
+    'thorlabs-apt',
+    'tqdm',
     'black',
     'coverage',
     'flake8',
