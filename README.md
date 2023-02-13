@@ -54,4 +54,4 @@ Here are the minor dangling features that are not implemented.
 * Native Sweeping Mode
 
 ## Examples:
-Have a look at the examples folder to see other examples and make use of a useful calibration script.
+Have a look at the examples folder to see other examples and make use of a [useful calibration script](./examples/calibration_sweep.py).
