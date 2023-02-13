@@ -51,7 +51,8 @@ aotf.save_profile()  # Now, calling an aotf.reset() will start with the saved se
 ## What's missing?
 Here are the minor dangling features that are not implemented.
 * changing laser channel profiles at runtime. (These must be changed with the external input pins.)
-* Native Sweeping Mode
+* automatic sweeping mode
+    * automatic self-sweeping is a somewhat out-of-the-ordinary feature for most users.
 
 ## Examples:
 Have a look at the examples folder to see other examples and make use of a [useful calibration script](./examples/calibration_sweep.py).
