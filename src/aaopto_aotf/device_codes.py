@@ -51,11 +51,6 @@ class Queries(StrEnum):
     # reading them has the effect of clearing the value.
 
 
-#query_excludes = [CmdRoots.RESET]  # TODO: finish.
-#Queries = StrEnum('Queries', {c.name: f"{c.value}{EOL}" for c in CmdRoots
-#                              if c not in query_excludes})
-#
-
 class Replies(StrEnum):
     CHANNEL_SELECT = "Line number> {0d}"
     PRODUCT_ID = "{0}"

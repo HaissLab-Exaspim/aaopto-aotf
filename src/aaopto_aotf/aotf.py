@@ -14,7 +14,7 @@ def channel_range_check(func):
     """Check that the channel is within range."""
     @wraps(func)  # Required for sphinx doc generation.
     def inner(self, channel, *args, **kwds):
-        if channel < 1 or channel > self._channel_count:
+        if channel < 1 or channel > self.num_channels:
             raise IndexError("Requested channel value is out of range.")
         return func(self, channel, *args, **kwds)
     return inner
@@ -22,7 +22,7 @@ def channel_range_check(func):
 
 MAX_POWER_DBM = 22.0
 
-BAUDRATE = 57600#19200
+BAUDRATE = 57600
 TIMEOUT = 0.5
 
 RESET_BOOT_TIME_S = 0.005
@@ -44,7 +44,7 @@ class MPDS:
         self.ser.reset_output_buffer()
 
         # Determine if MPDS has 1, 4, or 8 channels.
-        self._channel_count = len(self.get_lines_status()) - 1
+        self.num_channels = len(self.get_lines_status()) - 1
 
     def reset(self):
         """Reset the device to external mode with stored parameter settings."""
@@ -55,7 +55,7 @@ class MPDS:
         time.sleep(RESET_BOOT_TIME_S)
 
     def save_profile(self):
-        """Save current frequency and power settings for all channesl to the
+        """Save current frequency and power settings for all channels to the
         current profile.
 
         Note: the current profile is set externally with with a binary code set

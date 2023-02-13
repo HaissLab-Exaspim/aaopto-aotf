@@ -1,8 +1,8 @@
-# AA OptoElectronics AOTF
+# AA OptoElectronics MPDSnC AOTF Driver
 
 [![License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
-python driver to control MPDS AOTF devices.
+python driver to control MPDSnCxx AOTF devices.
 
 
 ## Installation
@@ -19,19 +19,39 @@ from aaopto_aotf.aotf import MPDS
 aotf = MPDS("COM3")
 ````
 
-The basic syntax looks like so:
+Before writing values, you must first set the global blanking mode, and each channel's frequency, mode, and whether it is driven by external input or internal (software controlled) input.
 ````python
-from aaopto_aotf.device_codes import DriverMode, BlankingMode
-
-NUM_CHANNELS = 8
+from aaopto_aotf.aotf import MPDS, MAX_POWER_DBM
+from aaopto_aotf.device_codes import DriverMode, BlankingMode, VoltageRange
 
 aotf.set_blanking(BlankingMode.INTERNAL)  # disable blanking control from external input pin.
+aotf.set_external_input_voltage_range(VoltageRange.ZERO_TO_FIVE_VOLTS)
 
 # Note: device channels are 1-indexed to be consistent with the datasheet.
-for channel in range(1, NUM_CHANNELS+1):
+for channel in range(1, aotf.num_channels + 1):
     aotf.set_frequency(channel, 110.5)
-    aotf.set_power_dbm(channel, 15.0)
+    aotf.set_driver_mode(DriverMode.EXTERNAL)
+````
+
+If the driver mode is set to `DriverMode.EXTERNAL`, the device will take its output setpoint from the external input pin.
+
+If set to `DriverMode.INTERNAL`, you can control the output with software settings:
+````python
+for channel in range(1, aotf.num_channels + 1):
     aotf.set_driver_mode(DriverMode.INTERNAL)
+    aotf.set_power_dbm(channel, MAX_POWER_DBM)
     aotf.enable_channel(channel)
 ````
 
+At this point, you might want to save the values set above to the current profile.
+````python
+aotf.save_profile()  # Now, calling an aotf.reset() will start with the saved settings.
+````
+
+## What's missing?
+Here are the minor dangling features that are not implemented.
+* changing laser channel profiles at runtime. (These must be changed with the external input pins.)
+* Native Sweeping Mode
+
+## Examples:
+Have a look at the examples folder to see other examples and make use of a useful calibration script.
