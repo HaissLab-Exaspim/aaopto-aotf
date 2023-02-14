@@ -171,6 +171,7 @@ class MPDS:
         # TODO: return these as enums
         # Parse channel settings.
         template = "l{channel} F={freq:.3f} P={power:.3f} {state} {mode}"
+        # TODO: may or may not start with 'Temp = 0\n\rAlim = 0\n\rUSB = 0\'
         for line in reply_lines[:-1]:
             ch_settings = parse(template, line).named
             settings[int(ch_settings.pop('channel'))] = ch_settings

@@ -86,7 +86,7 @@ if __name__ == "__main__":
                     watts_xy.append(watts)
                     the_file.write(f'{power}, {freq}, {watts}\n')
                     if watts > max_watts:  # Save best-so-far measurement.
-                        max_power_so_far = watts
+                        max_watts = watts
                         argmax_power = power
                         argmax_freq = freq
         except Exception as e:  # Exception catch-all so that we save the data.
@@ -95,13 +95,13 @@ if __name__ == "__main__":
             traceback.print_exc()
     print(f"The following settings: "
           f"({argmax_power:.2f}[dBm], {argmax_freq:.3f}[MHz]) "
-          f"result in the highest measured output power of {max_watts}[w].")
+          f"result in the highest measured output power of {max_watts:.6f}[w].")
     # Plot the results.
     fig = plt.figure()
     ax = plt.axes(projection ='3d')
     ax.scatter(power_xy, freq_xy, watts_xy)
-    ax.set_xlabel('power')
-    ax.set_ylabel('frequency')
+    ax.set_xlabel('power [dBm]')
+    ax.set_ylabel('frequency [MHz]')
     ax.set_zlabel('watts');
     plt.show()
 

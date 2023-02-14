@@ -42,6 +42,7 @@ for channel in range(1, aotf.num_channels + 1):
     aotf.set_power_dbm(channel, MAX_POWER_DBM)
     aotf.enable_channel(channel)
 ````
+Note that internal mode only enables a simple "On/Off" control scheme, and does not support linear scaling like external mode does vial the external analog input.
 
 At this point, you might want to save the values set above to the current profile.
 ````python
