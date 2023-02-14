@@ -6,7 +6,7 @@ python driver to control [MPDSnCxx AOTF devices](http://www.aaoptoelectronic.com
 
 
 ## Installation
-<!--To install this package from [PyPI](https://pypi.org/project/aaopto_aotf), invoke: `pip install aaopto_aotf`.-->
+To install this package from [PyPI](https://pypi.org/project/aaopto-aotf/), invoke: `pip install aaopto-aotf`
 
 To install this package from the Github in editable mode, from this directory invoke: `pip install -e .`
 
@@ -56,4 +56,4 @@ Here are the minor dangling features that are not implemented.
     * automatic self-sweeping is a somewhat out-of-the-ordinary feature for most users.
 
 ## Examples:
-Have a look at the examples folder to see other examples and make use of a [useful calibration script](./examples/calibration_sweep.py).
+Have a look at the examples folder to see other examples and make use of a [useful calibration script](https://github.com/AllenNeuralDynamics/aaopto-aotf/blob/main/examples/calibration_sweep.py).
