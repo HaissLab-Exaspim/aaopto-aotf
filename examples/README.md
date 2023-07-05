@@ -14,5 +14,5 @@ You must install `ThorlabsPM100`
 You must install Thorlabs' [Optical Power Monitor software](https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=OPM) 
 and then clone the Thorlabs [Light Analysis Examples](https://github.com/Thorlabs/Light_Analysis_Examples) repository as a submodule locally with:
 ````commandline
-git submodule --init
+git submodule update --init
 ````

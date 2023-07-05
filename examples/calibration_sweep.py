@@ -94,9 +94,9 @@ if __name__ == "__main__":
         inst = USBTMC(device=args.pm100_port)
         meter = ThorlabsPM100(inst=inst)
 
-    for i in range(10):
-        print(f"value from power meter is: {meter.read}")
-        time.sleep(0.5)
+    # for i in range(10):
+    #     print(f"value from power meter is: {meter.read}")
+    #     time.sleep(0.5)
 
     # Setup aotf.
     aotf = MPDS(args.aotf_port)
@@ -113,29 +113,33 @@ if __name__ == "__main__":
     argmax_power = 0
     argmax_freq = 0
     # Take measurements with progress bar.
-    with open(args.filename, 'w') as the_file:
-        the_file.write("power [dbm], frequency [MHz], watts [w]\n")
-        try:
-            for power in tqdm(np.arange(args.min_power, args.max_power, args.power_step),
-                    desc="Power Sweep:", leave=False):
-                aotf.set_power_dbm(args.channel, power, validate=args.validate)
-                for freq in tqdm(np.arange(args.min_freq, args.max_freq, args.freq_step),
-                        desc="Frequency Sweep:", leave=False):
-                    aotf.set_frequency(args.channel, freq, validate=args.validate)
-                    time.sleep(MEASUREMENT_SETTLING_TIME_S)
-                    watts = meter.read
-                    power_xy.append(power)
-                    freq_xy.append(freq)
-                    watts_xy.append(watts)
-                    the_file.write(f'{power}, {freq}, {watts}\n')
-                    if watts > max_watts:  # Save best-so-far measurement.
-                        max_watts = watts
-                        argmax_power = power
-                        argmax_freq = freq
-        except Exception as e:  # Exception catch-all so that we save the data.
-            print(e)
-            import traceback
-            traceback.print_exc()
+    try:
+        with open(args.filename, 'w') as the_file:
+            the_file.write("power [dbm], frequency [MHz], watts [w]\n")
+            try:
+                for power in tqdm(np.arange(args.min_power, args.max_power, args.power_step),
+                        desc="Power Sweep:", leave=False):
+                    aotf.set_power_dbm(args.channel, power, validate=args.validate)
+                    for freq in tqdm(np.arange(args.min_freq, args.max_freq, args.freq_step),
+                            desc="Frequency Sweep:", leave=False):
+                        aotf.set_frequency(args.channel, freq, validate=args.validate)
+                        time.sleep(MEASUREMENT_SETTLING_TIME_S)
+                        watts = meter.read
+                        power_xy.append(power)
+                        freq_xy.append(freq)
+                        watts_xy.append(watts)
+                        the_file.write(f'{power}, {freq}, {watts}\n')
+                        if watts > max_watts:  # Save best-so-far measurement.
+                            max_watts = watts
+                            argmax_power = power
+                            argmax_freq = freq
+            except Exception as e:  # Exception catch-all so that we save the data.
+                print(e)
+                import traceback
+                traceback.print_exc()
+    finally:
+        print("Turning off aotf.")
+        aotf.disable_channel(args.channel)
     print(f"The following settings: "
           f"({argmax_power:.2f}[dBm], {argmax_freq:.3f}[MHz]) "
           f"result in the highest measured output power of {max_watts:.6f}[w].")
