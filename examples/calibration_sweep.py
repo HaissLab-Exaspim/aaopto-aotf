@@ -47,16 +47,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("channel", type=int, default=1,
                         help="the desired aotf channel.")
+    parser.add_argument("wavelength", type=int, default=488,
+                        help="the desired wavelength to set the power meter (in nanometers).")
     parser.add_argument("min_freq", type=float, default=0,
-                        help="minimum frequency [dBm] to start the sweep.")
+                        help="minimum frequency [MHz] to start the sweep.")
     parser.add_argument("max_freq", type=float, default=150,
-                        help="maximum frequency [dBm] to stop the sweep.")
+                        help="maximum frequency [MHz] to stop the sweep.")
     parser.add_argument("freq_step", type=float, default=0.1,
                         help="frequency step size increment.")
     parser.add_argument("min_power", type=float, default=0,
-                        help="minimum power [MHz] to start the sweep.")
+                        help="minimum power [dBm] to start the sweep.")
     parser.add_argument("max_power", type=float, default=MAX_POWER_DBM,
-                        help="minimum power [MHz] to stop the sweep.")
+                        help="minimum power [dBm] to stop the sweep.")
     parser.add_argument("power_step", type=float, default=0.1,
                         help="power step size increment.")
     parser.add_argument("--validate", default=False, action="store_true",
@@ -89,10 +91,12 @@ if __name__ == "__main__":
         tlpm.getRsrcName(c_int(0), resource_name)  # get name of first device.
         tlpm.open(resource_name, c_bool(True), c_bool(True))
         tlpm.setPowerUnit(c_int16(0))  # 0 --> watts
+        tlpm.setWavelength(args.wavelength)
         meter = tlpm
     else:
         inst = USBTMC(device=args.pm100_port)
         meter = ThorlabsPM100(inst=inst)
+        meter.sense.correction.wavelength = args.wavelength
 
     # for i in range(10):
     #     print(f"value from power meter is: {meter.read}")
