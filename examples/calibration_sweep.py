@@ -91,7 +91,7 @@ if __name__ == "__main__":
         tlpm.getRsrcName(c_int(0), resource_name)  # get name of first device.
         tlpm.open(resource_name, c_bool(True), c_bool(True))
         tlpm.setPowerUnit(c_int16(0))  # 0 --> watts
-        tlpm.setWavelength(args.wavelength)
+        tlpm.setWavelength(c_double(args.wavelength))
         meter = tlpm
     else:
         inst = USBTMC(device=args.pm100_port)
