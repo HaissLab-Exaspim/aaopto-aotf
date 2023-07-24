@@ -77,6 +77,10 @@ if __name__ == "__main__":
     parser.add_argument("--console_output", default=True,
                         help="whether or not to print to the console.")
     args = parser.parse_args()
+    print("Running Calibration Sweep with the following settings:")
+    for arg in vars(args):
+        print(f"{arg}: {getattr(args, arg)}")
+    print()
 
     # Setup Thorlabs power meter
     meter = None
@@ -85,14 +89,22 @@ if __name__ == "__main__":
         # FIXME: put the connection attempt in a try-except with software link:
         # https://www.thorlabs.com/software_pages/ViewSoftwarePage.cfm?Code=OPM
         resource_name = create_string_buffer(1024)
-        tlpm = MyTLPM()
+        meter = MyTLPM()
         deviceCount = c_uint32()
-        tlpm.findRsrc(byref(deviceCount))  # We need to call this first.
-        tlpm.getRsrcName(c_int(0), resource_name)  # get name of first device.
-        tlpm.open(resource_name, c_bool(True), c_bool(True))
-        tlpm.setPowerUnit(c_int16(0))  # 0 --> watts
-        tlpm.setWavelength(c_double(args.wavelength))
-        meter = tlpm
+        meter.findRsrc(byref(deviceCount))  # We need to call this first.
+        meter.getRsrcName(c_int(0), resource_name)  # get name of first device.
+        meter.open(resource_name, c_bool(True), c_bool(True))
+        meter.setPowerUnit(c_int16(0))  # 0 --> watts
+        set_wavelength = c_double(0)
+        meter.getWavelength(c_int16(tlpm_mod.TLPM_ATTR_SET_VAL), byref(set_wavelength))
+        print(f"PM100 wavelength currently set to {set_wavelength.value}[nm].")
+        if abs(set_wavelength.value - args.wavelength) < 0.001:
+            print("PM100 already at correct wavelength. Skipping.")
+        else:
+            time.sleep(1.0) # Sleeping is necessary here.
+            # Otherwise reading current setting will change the set value.
+            print(f"Setting PM100 wavelength to {args.wavelength}[nm].")
+            meter.setWavelength(c_double(args.wavelength))
     else:
         inst = USBTMC(device=args.pm100_port)
         meter = ThorlabsPM100(inst=inst)
@@ -144,6 +156,9 @@ if __name__ == "__main__":
     finally:
         print("Turning off aotf.")
         aotf.disable_channel(args.channel)
+        if PLATFORM == 'win32':
+            print("closing connection to power meter.")
+            meter.close()
     print(f"The following settings: "
           f"({argmax_power:.2f}[dBm], {argmax_freq:.3f}[MHz]) "
           f"result in the highest measured output power of {max_watts:.6f}[w].")
