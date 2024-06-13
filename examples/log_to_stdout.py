@@ -6,7 +6,7 @@ from aaopto_aotf.device_codes import InputMode, BlankingMode
 import pprint
 import logging
 
-DEV_NAME = "/dev/ttyUSB0"
+DEV_NAME = "COM5" #"/dev/ttyUSB0"
 
 # Send log messages to stdout so we can see every outgoing/incoming msg.
 # Only display messages from this package.

@@ -4,7 +4,7 @@
 from aaopto_aotf.aotf import MPDS
 import pprint
 
-DEV_NAME = '/dev/ttyUSB0'
+DEV_NAME = 'COM5' #'/dev/ttyUSB0'
 
 aotf = MPDS(DEV_NAME)
 print(f"Product id: {aotf.get_product_id()}")

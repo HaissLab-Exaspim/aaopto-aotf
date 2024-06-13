@@ -173,8 +173,13 @@ class MPDS:
         template = "l{channel} F={freq:.3f} P={power:.3f} {state} {mode}"
         # TODO: may or may not start with 'Temp = 0\n\rAlim = 0\n\rUSB = 0\'
         for line in reply_lines[:-1]:
-            ch_settings = parse(template, line).named
-            settings[int(ch_settings.pop('channel'))] = ch_settings
+            try:
+                ch_settings = parse(template, line).named
+                settings[int(ch_settings.pop('channel'))] = ch_settings
+            except AttributeError:
+                # throw out non-channel-related information.
+                self.log.warning(f"Could not parse: {line}")
+                pass
         # Parse blanking settings.
         template = "{blanking} {state} {mode}"
         blanking_settings = parse(template, reply_lines[-1]).named
