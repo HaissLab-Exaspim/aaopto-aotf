@@ -168,6 +168,8 @@ class MPDS:
         reply = self._send(Queries.LINES_STATUS.value,
                            multiline_reply=True, read_until="?")
         reply_lines = reply.split(EOL)
+        if reply_lines == [""]:
+            return settings
         # TODO: return these as enums
         # Parse channel settings.
         template = "l{channel} F={freq:.3f} P={power:.3f} {state} {mode}"
